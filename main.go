@@ -8,7 +8,7 @@ import (
 )
 
 //APIURL for API
-const APIURL = "https://api.themoviedb.org/3/movie/popular?api_key=" + APIKEY + "&page=1"
+const APIURL = "https://api.themoviedb.org/3/movie/popular?api_key=" + config.APIKEY + "&page=1"
 
 type movie struct {
 	MovieID     int     `gorm:"column:movie_id;primary_key" json:"id"`
