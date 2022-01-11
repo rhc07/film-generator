@@ -5,10 +5,19 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+
+	"github.com/go-gorm/gorm"
 )
 
+//APIKEY in .env file
+var APIKEY = os.Getenv("API_KEY")
+
 //APIURL for API
-const APIURL = "https://api.themoviedb.org/3/movie/popular?api_key=" + config.APIKEY + "&page=1"
+var APIURL = "https://api.themoviedb.org/3/movie/popular?api_key=" + APIKEY + "&page=1"
+
+//DATABASE configuration
+var DATABASEURL =
 
 type movie struct {
 	MovieID     int     `gorm:"column:movie_id;primary_key" json:"id"`
@@ -23,6 +32,19 @@ type movie struct {
 
 type movieList struct {
 	List []movie `json:"results"`
+}
+
+func (list movieList) save() {
+	db, dberr := gorm.Open("mysql", DATABASEURL)
+	defer db.Close()
+	if dberr != nil {
+		log.Fatal(dberr)
+	}
+	db.Debug().DropTableIfExists(&movie{})
+	db.AutoMigrate(&movie{})
+	for _, row := range list.List {
+		db.Debug().Create(&row)
+	}
 }
 
 func tmdbImplementation(w http.ResponseWriter, r *http.Request) {
