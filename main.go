@@ -13,29 +13,16 @@ import (
 	"os"
 )
 
-//APIKEY in .env file
-var APIKEY = os.Getenv("API_KEY")
-
-//APIURL for API
-var APIURL = "https://api.themoviedb.org/3/movie/popular?api_key=" + APIKEY + "&page=1"
-
-//DBNAME variable for database name
-var DBNAME = os.Getenv("DB_NAME")
-
-//DBUSERNAME variable for database username
-var DBUSERNAME = os.Getenv("DB_USERNAME")
-
-//DBPASSWORD variable for database password
-var DBPASSWORD = os.Getenv("DB_PASSWORD")
-
-//DBHOST variable for database address
-var DBHOST = os.Getenv("DB_HOST")
-
-//DBPORT variable for database default port number
-var DBPORT = os.Getenv("DB_PORT")
-
-//DATABASEURL variable
-var DATABASEURL = DBUSERNAME + ":" + DBPASSWORD + "@tcp(" + DBHOST + ":" + DBPORT + ")/" + DBNAME + "?charset=utf8&parseTime=True&loc=Local"
+var (
+	APIKEY      string
+	APIURL      string
+	DBName      string
+	DBUsername  string
+	DBPassword  string
+	DBHost      string
+	DBPort      string
+	DatabaseURL string
+)
 
 type movie struct {
 	MovieID     int     `gorm:"column:movie_id;primary_key" json:"id"`
@@ -52,23 +39,8 @@ type movieList struct {
 	List []movie `json:"results"`
 }
 
-//func loadEnvFile(key string) string {
-//	err := godotenv.Load(".env")
-//
-//	if err != nil {
-//		log.Fatalf("Error loading .env file")
-//	}
-//
-//	return os.Getenv()
-//}
-
 func (list movieList) save() {
-	err := godotenv.Load(".env")
-
-	if err != nil {
-		log.Fatalf("Error loading .env file")
-	}
-	db, dberr := gorm.Open("mysql", DATABASEURL)
+	db, dberr := gorm.Open("mysql", DatabaseURL)
 	defer db.Close()
 	if dberr != nil {
 		log.Fatal(dberr)
@@ -109,12 +81,37 @@ func tmdbImplementation(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	//os.LookupEnv(DBNAME)
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+
+	//APIKEY in .env file
+	APIKEY = os.Getenv("API_KEY")
+
+	//APIURL for API
+	APIURL = "https://api.themoviedb.org/3/movie/popular?api_key=" + APIKEY + "&page=2"
+
+	//DBNAME variable for database name
+	DBName = os.Getenv("DB_NAME")
+
+	//DBUSERNAME variable for database username
+	DBUsername = os.Getenv("DB_USERNAME")
+
+	//DBPASSWORD variable for database password
+	DBPassword = os.Getenv("DB_PASSWORD")
+
+	//DBHOST variable for database address
+	DBHost = os.Getenv("DB_HOST")
+
+	//DBPORT variable for database default port number
+	DBPort = os.Getenv("DB_PORT")
+
+	//DATABASEURL variable
+	DatabaseURL = DBUsername + ":" + DBPassword + "@tcp(" + DBHost + ":" + DBPort + ")/" + DBName + "?charset=utf8&parseTime=True&loc=Local"
+
 	router := mux.NewRouter()
 	router.HandleFunc("/", tmdbImplementation)
-	fmt.Print(DATABASEURL)
-	//fmt.Print(DBNAME)
-	//os.LookupEnv(DBNAME)
 	fmt.Println("Listening of port 8080")
 	http.ListenAndServe(":8080", router)
 }
