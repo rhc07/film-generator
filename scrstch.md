@@ -1,1 +1,0 @@
-CREATE TABLE movies (movie_id INT(11), title VARCHAR(150), release_date DATE, language VARCHAR(60), adult TINYINT, image BLOB, overview TEXT, vote_average FLOAT, PRIMARY KEY (movie_id));
