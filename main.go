@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"io/ioutil"
@@ -68,7 +67,7 @@ func main() {
 
 	//Random number generator
 	rand.Seed(time.Now().UnixNano())
-	min := 10
+	min := 2
 	max := 634649
 	RANDOM_NUMBER = rand.Intn(max-min+1) + min
 	MOVIE_ID = strconv.Itoa(RANDOM_NUMBER)
@@ -82,7 +81,6 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/", tmdbImplementation)
 	fmt.Println("Listening of port 8080")
-	rand.Seed(time.Now().UnixNano())
 	fmt.Println(RANDOM_NUMBER)
 	http.ListenAndServe(":8080", router)
 }
